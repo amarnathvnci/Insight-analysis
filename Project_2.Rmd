@@ -1,0 +1,848 @@
+---
+title: "CA02"
+author: "Amarnath V"
+date: "November 11, 2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+#Introduction:
+
+Let me state my role as "Portfolio Manager".
+
+###Portfolio Manager:
+The Portfolio Manager is a person who drafts an investment strategy to make an investment decision for performing investment activities like investing a mutual or closed end fund's assets for the vested financial institutions or individuals [1].
+
+This role includes corresponding with clients and coming to arrangements and resolutions with them. 
+
+I am required to liaise with liquidators, third parties and colleagues of mine in other departments in my organization. 
+
+I am also required to assess Standard Financial Statements and proposals sent in by customers and attempt to work with the customer
+to come to a solution.
+
+###Scenario:
+One day, an individual investor named "Bill Gates"(you heard right, the founder of Microsoft which is one of the biggest technology organizations) approached the financial institution in which I am working as a portfolio manager. He is interested to invest in 
+familiar commodities in the U.S. namely, soybean and natural gas and he is also interested to invest in mutual funds and ETF's (Exchange-Traded funds) but he is quite worried, how his investment performs so he needs our institution to analyze for him and 
+let him know how his investments perform if he does the investment on the above mentioned categories. Being a portfolio manager, 
+I am responsible to perform the investment analysis and advice him how his investment would perform if he would invest.
+
+Let's first draft an insights for the investments he have chosen,
+
+##Insights of Soybean:
+As we all know US top exporting commodity is Soybean and China is the highest consumer of the soybean. China is the most populous 
+country in the world so obviously consumption will be high. Even though China looking elsewhere to import soybean due to trade 
+conflict with US but it’s very hard to implement and if they can it will take years. So, soybean is the right choice to invest but 
+when to buy it? This is what a portfolio manager discovers via his analysis, being a portfolio manager let me apply a suitable statistical model (Artificial Neural Network) to the data we have and find the perfect time to buy or sell the investment to get 
+good returns.
+https://tradingeconomics.com/commodity/soybeans/forecast
+
+##Insights of natural gas:
+Investing in commodity is a right choice and that too investing in energy and agricultural commodity is the best choice because 
+of the past market trends. Even though natural gas market is not stable, with the help of our organization investor can invests 
+at low cost and sells at high rate. It will become possible with the help of Artificial Neural Network model. By applying this 
+model to the commodity futures data we could predict the future value of commodities and advice the investor based on whether he 
+needs to sell or buy the investments on commodities.
+
+##Insight on Mutual Funds
+Mutual funds are one of the most familiar investments on the market. Most people select mutual funds for their investment portfolio because of the funds' expertized management, many people purchase mutual funds because of their competitive returns. Others are like 
+them because they are easy to buy and sell. Still others cite the fact that mutual funds, because they hold several investments, can spread risk. Mutual fund schemes are made up of stocks belonging to the market. After seeing the performance of the stock market 
+at the end of 1 year, decision to invest in mutual funds or not will be taken. With the help of time series forecast model ARIMA 
+let’s study the performance of requested stock market index and let’s advice the investor the right time for buying and selling 
+the mutual funds.
+
+##Insights on Exchange trade funds:
+Exchange-traded fund or simply ETF, is a pool of securities that trades on an exchange, more like a stock. ETFs are usually very transparent—their underlying holdings are fully revealed on a daily basis—and are highly liquid. Similar to mutual funds ETF’s also depends on stock market so with the help of ARIMA model let’s forecast the stock’s performance and advice investor which is a right
+time to buy and which is a right time to sell.
+
+
+The key academic work defending my insights will be deeply explained in the "Methods" section of this document.
+
+#Dataset:
+While starting my work for the customer, my boss, Simon gave a new task to prepare a consolidated currently trending investment dataset
+for the organization future worl. As my current work related to this I have decided to take up this task to create a consolidated dataframe and fetch the required features from the consolidated dataframe itself.
+
+Take a look at the data of various trending investments that my boss suggested below and I could see all the required features 
+that I need to perform analysis for the customer.
+
+```{r}
+Investments <- c("Crypto-currencies","Fiat currencies","Commodities","Technology Companies","Banking","Stock Market")
+Datasets <- c("Dash and ZCash","Canadian Dollar and Chinese Yuan","Soybean and Natural gas","CISCO and Google", 
+              "Bank of China and Royal Bank of Canada","NASDAQ-S&P500 and EUREX-STOXX50")
+choice <- data.frame(Investments,Datasets)
+library(pander)
+pandoc.table(choice, style = "grid", caption = "Consolidated trending investment dataset of my organization")
+```
+
+Before starting consolidating dataset let's have a brief note on each of the datasets he suggested.
+
+###Cryptocurrency:
+Cryptocurrency is a computer-generated or digital currency devised to operate as a medium of exchange. It uses cryptography approaches to safeguard and authorize transactions as well as to control the creation of new parts of a particular cryptocurrency. Essentially, cryptocurrencies are some degree of registers in a database that no one can alter unless particular conditions are satisfied. 
+
+###Dash and Zcash:
+Dash and Zcash are an open source (source code is freely available) cryptocurrency which is developed by a decentralized independent company that provides confidentiality and choosy transparency of dealings. Among these cryptocurrencies Dash is run by a subsection of users, called "masternodes". Some of us want our transaction to be privacy from end to end and yes! we do have privacy coins such as dash and zcash which are being top 15 coin-market cap and those cryptocurrencies are built by security specialized technical team.
+
+
+###Fiat currency:
+Fiat currency is authorized tender whose worth is supported by the government that provided it. The U.S. dollar is fiat money, as are the euro and many other major world currencies. This process varies from money whose worth is supported by some physical good such as gold or silver, called commodity money.
+
+###Canadian Dollar
+The Canadian currency outclassed almost all of its key peers in 2017. Expecting the same for upcoming years. This is the reason for incorporating this currency data as one of my datasets.
+Canadian Dollar exchange rate against Euro
+
+###Chinese Yuan
+China is the major manufacturing economy in the world, it is also the world’s largest exporter nation, and the world’s second largest economy. With its enormous and still developing financial footprint, the financial world is observing the Chinese yuan as a global currency and worthwhile investment. Can the yuan ever serve as a potential alternative to the U.S. dollar? Analysts tracking the Chinese yuan believe that now may be the better period to invest in the Chinese currency. 
+Chinese yuan exchange rate against euro
+
+###Commodities:
+Let's discuss about this in "Insight" section of this document
+
+###Technology companies:
+###Alphabet Inc.:
+Alphabet is a familiar organization which is the parent company for technology giant google– the source of discovering information to get answer the any questions of the people from all over the world. Google is directing the people to path in global innovation, from new types of artificial intelligence to driverless cars.
+
+###CISCO SYSTEMS INC.
+CISCO SYSTEMS INC. IS THE GLOBAL FRONT-RUNNER in networking for the Internet. The company was started in 1984 by two computer experts from Stanford University looking a simple step to inter-connect various kinds of computer systems.
+In 1986, Cisco Systems dispatched its first creation and now it has grown up as a multi-national corporation, with more than 35,000 employees in all over115 countries. Cisco's networking solutions connect people and electrical devices via their network solutions, let people to transfer or take a look at the information without any barriers.
+
+
+###Banks:
+###The Royal Bank of canada
+The Royal Bank of Canada is the biggest Canadian bank by market capitalization, at ~$94 billion as placed on the NYSE. It was established in 1869 as a sector bank, and from then it has developed to assist customers in Canada, the US, and 37 various other countries. The bank's dividend streak is remarkable, holding paid stable or growing dividends each year since 1943. It fixed its dividend for 2 years over the financial crisis, and has enlarged it each year since 2010. 
+Source: Investor Presentation
+
+###Bank of china:
+Bank of China was officially implemented in February 1912. The Bank continuously assisted successively as the country’s central bank, international exchange bank and specialized international trade bank. Satisfying its promise to helping the public and emerging China’s financial services sector, the Bank grew to a demanding place in the Chinese financial industry and created a good positioning in the international financial group, despite various difficulties and failures. Throughout China’s reform and staring up time, the Bank achieved the historic chance provided by the government’s plan of capitalizing on foreign funds and innovative technologies to progress economic growth, and became the country’s key foreign financing medium by developing its competitive benefits in foreign exchange trade. In 1994, the Bank was converted into a exclusively state-owned commercial bank. In August 2004, Bank of China Limited was established. The Bank was registered and placed on the Hong Kong Stock Exchange and the Shanghai Stock Exchange in June and July 2006 correspondingly, changing into the first Chinese commercial bank to present an A-Share and H-Share primary public offering and accomplish a dual listing in both markets. In 2016, Bank of China was again chosen as a Global Systemically Important Bank, thus becoming the only financial institution from developing economies to be chosen as a Global Systemically Important Bank for six successive years.
+
+###Market index:
+Let's discuss about this in "Insight" section of this document
+
+
+
+
+Let me create the consolidated investment dataset for my organization.
+
+```{r}
+library(Quandl)
+Quandl.api_key("syeqdyM7PVHT4VNkyX15")
+#Fetching the daily data for a year from Quandl
+####Crypto-currency
+#Dash <-> USD exchange
+DAS <- Quandl("BITFINEX/DSHUSD", collapse="daily", start_date="2017-11-16",end_date="2018-11-15", type="raw")
+
+#ZCash <-> USD exchange
+ZAS <- Quandl("BITFINEX/ZECUSD", collapse="daily", start_date="2017-11-16",end_date="2018-11-15", type="raw")
+
+
+###Fiat Currencies
+#Canadian Dollar <-> Euro
+CAEU <- Quandl("ECB/EURCAD", collapse="daily", start_date="2017-11-16",end_date="2018-11-15", type="raw")
+
+#Euro <-> Chinese Yuan
+EUCY <- Quandl("ECB/EURCNY", collapse="daily", start_date="2017-11-16",end_date="2018-11-15", type="raw")
+
+
+###Commodities
+#Soybean futures, continuous contract
+SOY <- Quandl("CHRIS/CME_S1", collapse="daily", start_date="2017-11-16",end_date="2018-11-15", type="raw")
+
+#E-mini Natural Gas futures, continuous contract
+NG <- Quandl("CHRIS/CME_QG1", collapse="daily", start_date="2017-11-16",end_date="2018-11-15", type="raw")
+
+
+###Technology Companies
+#CISCO - BATS U.S. Stock Exchange
+CIS <- Quandl("BATS/EDGA_CSCO", collapse="daily", start_date="2017-11-16",end_date="2018-11-15", type="raw")
+
+#Alphabet Inc. - BATS U.S. Stock Exchanges
+GOO <- Quandl("BATS/EDGA_GOOG", collapse="daily", start_date="2017-11-16",end_date="2018-11-15", type="raw")
+
+
+###Bank
+#Royalbank of Canada – Boerse Stuttgart stock exchange
+RBC <- Quandl("SSE/RYC", collapse="daily", start_date="2017-11-16",end_date="2018-11-15", type="raw")
+
+#KBC – EURONEXT exchange
+KBC <- Quandl("EURONEXT/KBC", collapse="daily", start_date="2017-11-16",end_date="2018-11-15", type="raw")
+
+
+###Market index
+#S&P500 - American stock market index
+SP <- Quandl("CHRIS/CME_SP1", collapse="daily", start_date="2017-11-16",end_date="2018-11-15", type="raw")
+
+#STOXX50 - European stock market index
+ST <- Quandl("CHRIS/EUREX_FESX1", collapse="daily", start_date="2017-11-16",end_date="2018-11-15", type="raw")
+
+#Let's take a look at the top 6 columns and structure of each dataset
+nam <- list(DAS,ZAS,CAEU,EUCY,SOY,NG,CIS,GOO,RBC,KBC,SP,ST)
+for(i in nam){
+  head(i)
+  str(i)
+}
+```
+
+
+
+
+###Treating missing value and inputing value for weekend using Last-value carried forward methond:
+Last-value carried forward method is often used by several data providers and financial institution for imputing missing values in financial time series [2].
+
+```{r}
+library(tidyr)
+library(dplyr)
+#function to treat normal missing value and the weekend missing value.
+wend <- function (dfa){
+dfa <- dfa %>%
+        mutate(Date = as.Date(Date)) %>%
+        complete(Date = seq.Date(min(Date), max(Date), by="day"))
+#Last observation carried out function
+        dfa <- na.locf(dfa)}
+
+
+
+#We need to remove the spaces from the column names in order to prevent a conflict that can occur when applied to neural network.
+#Function to remove spaces in column name :
+spaceless <- function(x) {colnames(x) <- gsub(" ", "_", colnames(x));x}
+
+
+
+
+
+#Let's combine all 12 datasets into a single consolidated dataframe by refering the date. Before that, by taking a glance of 
+#the dataset we can see many of them has same column names in order to avoid confusion lets prefix their column name 
+#with dataframe name.
+
+#Let's use below command to rename columns of the dataset inorder to avoid conflicts between their names.
+#names(data) <- c("new_name", "another_new_name")
+colnames(DAS)[2:length(DAS)] <- paste(colnames(DAS[2:length(DAS)]),"DAS",sep="")
+colnames(ZAS)[2:length(ZAS)] <- paste(colnames(ZAS[2:length(ZAS)]),"ZAS",sep="")
+colnames(CAEU)[2:length(CAEU)] <- paste(colnames(CAEU[2:length(CAEU)]),"CAEU",sep="")
+colnames(EUCY)[2:length(EUCY)] <- paste(colnames(EUCY[2:length(EUCY)]),"EUCY",sep="")
+colnames(SOY)[2:length(SOY)] <- paste(colnames(SOY[2:length(SOY)]),"SOY",sep="")
+colnames(NG)[2:length(NG)] <- paste(colnames(NG[2:length(NG)]),"NG",sep="")
+colnames(CIS)[2:length(CIS)] <- paste(colnames(CIS[2:length(CIS)]),"CIS",sep="")
+colnames(GOO)[2:length(GOO)] <- paste(colnames(GOO[2:length(GOO)]),"GOO",sep="")
+colnames(RBC)[2:length(RBC)] <- paste(colnames(RBC[2:length(RBC)]),"RBC",sep="")
+colnames(KBC)[2:length(KBC)] <- paste(colnames(KBC[2:length(KBC)]),"KBC",sep="")
+colnames(SP)[2:length(SP)] <- paste(colnames(SP[2:length(SP)]),"SP",sep="")
+colnames(ST)[2:length(ST)] <- paste(colnames(ST[2:length(ST)]),"ST",sep="")
+
+#Combining 12 datasets into a single dataframe
+TOTdf <- Reduce(function(x, y) merge(x, y, by="Date"), list(DAS,ZAS,CAEU,EUCY,SOY,NG,CIS,GOO,RBC,KBC,SP,ST))
+
+#Applying both function to all the datasets fetched from Quandl and top 6 columns and structure of each dataset after removing missing values
+TOTdf <- wend(TOTdf)
+TOTdf <- spaceless(TOTdf)
+head(TOTdf)
+str(TOTdf)
+
+```
+
+
+Firstly, let us find the required features from my organization's consolidated trending investment dataset that consists of key variables of all currenlty trending investment's dataset and choose financial datasets for those investments. Mostly stock markets are forecasted using ARIMA model but many times ANN outperforms it. So in this study let us discuss which method fits well to the dataset and contrast both method. The main features required to apply both methods are follows for the dataset Soyabean,Natural gas, S&P500 and STOXX50,
+
+1. Open
+2. High
+3. Low
+4. Last
+5. Volume
+6. Settle
+
+
+
+#Method:
+
+###ARIMA (Autoregressive Integrated Moving Average):
+ARIMA (Autoregressive Integrated Moving Average) is a key tool adopted in time series analysis that uses current value of a variable to predict its future values. The application of ARIMA is to identify the features of the connection among our residuals, that would deliver our method with a specific degree of predicting strength. Firstly, to perform a time series analysis we should state our dataset in the form of logarithms. If our data is stated as it is in price terms, then this method does not let for continuous compounding of returns across time and will provide deceptive results.The much common ARIMA procedure model can be inscribed as an AR if the MA process is invertible. Since AR models are modest to evaluate, have well improved model selection criteria, and require less pretesting, they are the form of ARIMA used here [3].
+
+###An ARIMA model involves coordinates (p, d, q):
+
+1. p stands for the number of autoregressive terms, i.e. the number of observations from past time values used to forecast future values. For example. if the value of p is 2, then this means that two previous time observations in the series are being used to forecast the future trend.
+
+2. d denotes the number of differences needed to make the time series stationary (i.e. one with a constant mean, variance, and autocorrelation). For instance, if d = 1, then it means that a first-difference of the series must be obtained to transform it into a stationary one.
+
+3. q represents the moving average of the previous forecast errors in our model, or the lagged values of the error term. As an example, if q has a value of 1, then this means that we have one lagged value of the error term in the model.
+
+###Autocorrelation and Partial Autocorrelation Plots
+We use the ACF and PACF (Autocorrelation and Partial Autocorrelation) interpretations to find whether our data is stationary upon differencing. The autocorrelation and partial autocorrelation function both quantify to varying degrees, the correlation coefficient among a series and lags of the variable thru time. An autoregressive process is when a time series follows a particular pattern in that its present value is in some way correlated to its past value(s). For instance, if we are able to use regression analysis to discern the present value of a variable from using its past value, then we refer to this as an AR(1) process.
+
+###Dickey-Fuller Test
+For using an ARIMA model, we now like to perform extra formal test to identify if our time series is stationary; i.e. do we have a constant mean, variance and autocorrelation across our time series dataset. To identify this, we adopt the Dickey-Fuller Test. At the 5% level of significance:
+H0: Non-stationary series
+HA: Stationary series
+
+
+###auto.arima function:
+To produce an ARIMA plot and output by allowing R itself choose the suitable parameters using ARIMA, we use the auto.arima function for defining our time series.
+
+###Ljung-Box Test
+
+When we could effectively adopt this method to forecast future values for price, a significant test used to confirm the results of the ARIMA model is the Ljung-Box test. Basically, the test would be used to identify if the residuals of our time series stay o a random pattern, or if there is a significant degree of non-randomness.
+
+H0: Residuals follow a random pattern
+HA: Residuals do not follow a random pattern
+
+Note that the model for picking a exact number of lags for Ljung-Box can be quite arbitrary. For this purpose, we will perform the Ljung-Box test with lags 5, 10, and 15. To execute this test in R, we would use the function mentioned below,
+Box.test(df$var, lag=5, type="Ljung-Box")
+
+
+###Artificial Neural Network model:
+Artificial neural networks are computational model imitated on the inner structure of the brain. ANN have been mainly utilized for finding financial economic glitches. Distinctive applications in finance include mortgage risk valuation, economic forecast, risk valuation of exchange-traded fixed-income investments, portfolio choice/divergence, mockup of market conduct, index building, and discovery of detailed economic factors. For instance, in 1989, the US government initiated a five-year, multi-million-dollar project for neural network research, but financial services companies have been the major promoters of research in neural network applications [3]. 
+
+ANN consists of a sum of inter-connected simply processing units called neurons or nodes. Each neuron gets an input indicator from other neurons or outer inputs and then after processing the signals nearby via a shifting function, it gives out a reformed signal to other neurons real outputs. ANNs are processed by the network architecture, that is, the sum of layers, the sum of neurons in each layer and how the neurons are inter-connected. In a familiar form, multi-layer perceptron (MLP), all nodes and layers are formed in a feed-forward manner. The first or the lowest layer is an input layer where external information is received. The last or the outermost layer is an output layer where the network creates the model results. In between, there are one or more than one hidden range which are critical for ANNs to identify the complex patterns in the data. All nodes in next to layers are linked by acyclic arcs from a lower part to a higher part. A multi-layer perceptron with a single hidden part and one output neuron is the mostly used ANN structure for more true applications, and will be adopted in this work. Neural networks are strong predicting tools which can does difficult function mapping. Unlike linear regression method which is restricted to the linear function mappings, neural networks are able to identify difficult nonlinear relations in the data. The issue exists still is whether neural networks can give perfect predictions or a fair forecast to the defined function. This is overcome by the following work in neural network research which exposes that a feed-forward neural network with only single hidden segment can predict any continuous function with arbitrarily defined accuracy provided adequate hidden neural used. The hopeful results of ANN application to financial data, motivate us to compare and contrast the probability of each variance of model on financial data. 
+
+Previously existing methods originate contradictory evidence regarding the persistence and predictability of mutual fund act. This is because these methods adopted linear models as the key tools, they would not be proficient to capture complexity in the data. Additionally, while economic environment influences the fund managers' actions, macroeconomic variables are beneath their control. Given an economic environment, fund managers must consequently focus their attention on fund-specific features that influence performance. From an investor's perspective, taking about 75±80% of professional money managers into an account do not defeat the market index, forecast of mutual fund performance centers on information about fund features that can support him/her pick well performing funds is tremendously worthful. This issue can be addressed by adopting an artificial neural network method. ANN studies which fund-specific features are important performance predictors, taking as provided environment where the fund performs[4].
+
+###Why I am preferring ANN over ARIMA model?
+
+In the study “Neural networks for technical analysis: a study on KLCI,” [5] the stock predicting accuracy of ANN and ARIMA models are compared and exposed that the ANN model attained more accurate returns than the traditional ARIMA models. Similar to this study, “Time series prediction with genetic-algorithm designed neural networks: an empirical comparison with modern statistical models,” [6] contrasted the forecasting accuracy of ANNs and ARIMA on time series prediction to expose that the ANNs outclassed ARIMA in forecasting stock movement track as the latter was able to sense hidden forms in the data used. Empirical outcomes gotten also exposed that the ANN model is greater than the ARIMA model. “Stock price prediction: Comparison of Arima and artificial neural network methods—an Indonesia stock's case,” [7] performed same contrast both model on the Indonesia stock exchange and got better accuracy with ANN than the ARIMA model. More literature has exposed the predominant application of ANNs as an effective tool for stock price prediction. This makes ANN a promising technique or potential hybrid for the prediction of movement in time series [8].
+
+
+#Insights
+Before applying the method to derive the insights let's first discuss the abount components of insights in detail. 
+###Commodities:
+Commodities are the lifeblood of our economic system, that are standardized goods— such as copper, gold, oil, and wheat—which are broadly traded crosswise between national boundaries. For the purposes of investment, commodities are generally broken down into the following divisions: energy commodities (crude oil, natural gas, etc.); agricultural commodities (rice, wheat, soybeans, etc.); industrial/base metals (zinc, nickel, copper, etc.); and precious metals (platinum, gold, palladium, etc.). Because of the storage costs are high most of the commodities cannot be stored easily. This reason influenced investors to usually seek experience to commodities via derivatives, naturally in the form of futures contracts. Investments are usually executed via index tracking funds, hedge funds, and other active investment strategies [10]. 
+
+###Investments in Commodities:
+ Most of the commodity investments are made thru index funds. Commodity index investments are classically categorized by a passive tactic devised to obtain exposure to commodity price movements as part of a portfolio diversification tactic. Exposure to commodity price movements can be related to investment in a broad index of commodities, a sub-index of related commodities, or a single-commodity index. Index funds purchase a frontward position, then trade it when it is about to expire and utilize the earnings from this sale to buy forward again by one or more months (a process known as rolling)[10].
+
+
+###SoyBean
+A. E. Staley Manufacturing Company commenced to crush soybeans 100 years ago, a significant invention that directed to the making of soy oil which is used in cooking a soy meal and also used for feeding chickens and hogs. Today, the soybean is one of the world’s most important legumes and a significant base of protein.  
+
+Crush spread is the tactic which is used by most of soybean traders, in which they purchase one contract of soybeans at the same time trades one contract of soybean oil and one contract of soybean meal. This is performed in order to generate a hedge against supply and demand aspects. Crush spread is simply profit margin achieved by breaking soybeans into soyoil[11]. 
+Modelling and trading the soybean-oil crush spread with recurrent and higher order networks: A comparative analysis
+
+
+###Production
+The major portion of soybean crops are assigned for vegetable oil and animal feed. While tofu, soy milk and other soy products have added admiration in current years, only a minor percentage of the crop is used for such foods. The U.S. harvests more soybeans than any other country, followed by Brazil, Argentina, China, India, Paraguay and Canada.
+Soybeans are the leading oilseed crop in the U.S. about 90% of entire oilseed harvest. In U.S., most soybeans are planted during May and early June and harvested between September and October.
+
+###Price Dependencies
+Soybean prices are affected by the below mentioned factors:
+•	the demand for biodiesel
+•	intensity of the U.S. dollar
+•	real and perceived health hazards
+•	evolving market need
+•	emerging conditions
+
+https://www.investopedia.com/university/commodities/commodities19.asp
+
+
+China presently clutches a foremost spot within the world consumer market for and, in the last ten years, has developed the biggest importer of soybean from U.S. [12]
+DE LIMA, D.P., FIORIOLLI, J.C., PADULA, A.D. and PUMI, G., 2018. The impact of Chinese imports of soybean on port infrastructure in Brazil: A study based on the concept of the “Bullwhip Effect”. Journal of Commodity Markets, 9, pp. 55-76.
+
+###Natural Gas:       
+Natural gas is a fossil fuel created from departed plant matter stuck between rock deposits deep underneath the earth’s surface. Consisting mostly of methane, natural gas is discovered in conjunction with coal beds and supplementary fossil fuel deposits all over the world. It is used widely all over the U.S. to heat houses and produce electricity and has important purposes in both commercial and industrial settings.
+
+
+###Price affecting factors
+Minor variations in supply or demand can outcome in significant price changes which eventually fetch supply and demand back into equilibrium. Factors that influences supply and demand, and hence price, include:
+•	Changes in natural gas making
+•	the size of imports and exports
+•	storage stages
+•	monetary development
+•	changes in winter and summer weather
+•	prices of rival fuels
+
+
+https://www.investopedia.com/university/commodities/commodities12.asp
+
+Investing in natural gas sounds like a winner: demand growing constantly, fracking ensures to encounter that demand, and prices have moved in the past numerous years. In the meantime it's hyped as an substitute to coal, and to a slighter range, oil. There's a lot to like.
+But financing in commodities on a futures market is still a complex commercial for maximum retail stockholders. Taxes and expenses can be complexed to solve. Hence the exchange-traded savings can be a better vehicle.
+
+https://www.investopedia.com/articles/investing/082814/investing-natural-gas-eye-etfs-seasonality.asp
+
+
+
+###What is a 'Market Index'?
+A market index is a calculated average of numerous stocks or further investment vehicles from a unit of the stock market, and it is evaluated from the price of the chosen stocks. Market indexes are proposed to signify a complete stock market and follow the market's variations over long period of time. For instance, the broadly used Standard and Poor's 500 (S&P500) Index is calculated by uniting 500 large-cap U.S. stocks into a index value. Investors can follow variations in the index's value over a period of time and use it as a scale for their own portfolio returns.
+
+###BREAKING DOWN 'Market Index'
+Market indices calculate the worth of a set of stocks. If an index increases by one level, or 1%, that defines a set of stocks has, harmoniously, increases its worth by one level and also attract more investors.
+
+In 1980’s launch of stock index futures contracts is believed as a momentous creation. Even though there are some disagreements with index arbitrage, the program trading that established after October stock market crash in 1987, these contracts became very successful and valuable to the portfolio managers. Stock index futures are being used as a major trading tool by the institutional investors[13].
+Ghosh, A. (1993), Hedging with stock index futures: Estimation and forecasting with error correction model. J. Fut. Mark., 13: 743-752. doi:10.1002/fut.3990130703
+
+###S&P 500:
+The Standard & Poor's 500, usually shortened as the S&P 500, or just the S&P, is an American stock market index constructed on the market capitalizations of 500 big organizations containing common stock listed on the NYSE or NASDAQ.
+How do S&P 500 futures work?
+S&P 500 futures are a kind of capital asset contract that delivers a trader the claim to a predefined choice of stocks and on a predefined forthcoming date recorded on the S&P 500 stock market index. There are various dimensions of stock baskets for the S&P 500; the Chicago Mercantile Exchange, or CME, provides a "big contract" and an "e-mini" contract.
+The big futures contract was firstly valued by multiplying the determined futures price by $500. For instance, if the S&P was selling at $800, the worth of the big contract was $400,000, or $500 x $800. Ultimately, the CME reduce the contract multiplier in half to $250 times the price of the futures index.
+E-mini futures are one-tenth the worth of the big contract. If the S&P 500 futures price is $800, this outcomes in an e-mini being valued at $40,000. The "e" in e-mini stands for electronic.
+
+
+
+###What is the 'Euro STOXX 50 Index'?
+The Euro STOXX 50 Index is a market capitalization calculated stock index of 50 big, blue-chip European companies functioning within Eurozone countries. Components are chosen from the Euro STOXX Index which contains big-, mid- and small-cap stocks in the Eurozone.
+
+###BREAKING DOWN 'Euro STOXX 50 Index'
+The Euro STOXX 50 Index is governed and authorized by STOXX Limited which gives indexes signifying equity market investments over the entire world. The Euro STOXX 50 Index consists of Eurozone’s 50 biggest organizations by market cap.
+
+###STOXX 50:
+STOXX Limited is held by Deutsche Börse AG. It has been governing and authorizing indexes since 1998. The Euro STOXX 50 Index was among the first STOXX indexes commenced in 1998. The company has widened its contributions significantly since it’s begun which aimed on European stock indexes. It now provides indexes representing nearly all countries and area of the world. Asset classes include equity, static pay and currency. It also offers indexes by division, aspect, approach and theme.
+The Euro STOXX Index contains organizations of entire market capitalization stages from Austria, Belgium, Finland, France, Germany, Ireland, Italy, Luxembourg, the Netherlands, Portugal and Spain.
+
+The Euro STOXX 50 Index naturally signifies around 60% of the Euro STOXX Index. The Euro STOXX 50 Index is revised yearly in September for any index component variations.
+
+As of January 8, 2018, the top ten components in the Euro STOXX 50 Index comprised the following:
+
+1. TOTAL
+2. SIEMENS
+3. SAP
+4. BCO SANTANDER
+5. BAYER
+6. ALLIANZ
+7. BASF
+8. SANOFI
+9. UNILEVER
+10.BNP PARIBAS
+
+
+https://www.investopedia.com/terms/d/dowjoneseurostoxx50.asp#ixzz5WpjS3fVt 
+
+On 25 May 2010 the S&P 500 Dividend Index and choices on the S&P500 Annual Dividend Index were presented on CBOE, whilst choices on Euro STOXX50 Index Dividend Futures and Euro STOXX50 Index Dividend Points (DVP) were also announced on Eurex. The futures contract on the Dow Jones Euro STOXX50 DVP index announced on 30 June 2008 by Eurex has faced a impressive growth. This is barely astonishing so far then reinvested dividends registered for nearly half of the Dow Jones Euro STOXX50 entire yields since the last week of December 1991 [13].
+TUNARU, R.S., 2018. Dividend derivatives. Quantitative Finance, 18(1), pp. 63-81.
+
+###Mutual fund:
+A mutual fund is an investment vehicle crafted with a assortment of money accumulated from various investors for the determination of investing in safeties such as stocks, bonds, money market instruments and other assets. Mutual funds are functioned by qualified money directors, who deal the fund's investments and try to yield capital profits and/or revenue for the fund's investors. A mutual fund's portfolio is organized and governed to tie the investment aims specified in its brochure.
+
+###Types of Mutual Funds
+Mutual funds are classified into various types of divisions, signifying the types of securities the mutual fund director invests in.
+One of the majors is the fixed income type. A fixed income mutual fund aims on investments that pay a static rate of return, such as government bonds, corporate bonds or other debt instruments. The knowledge is the fund portfolio produces a higher amount of interest income, which can then be transfered on to stockholders.
+
+One more group comes under the moniker "index funds."  The investment plan is based on the trust that it is very tough, and often costly, to attempt to constantly overcome the market. So the index fund manager just purchases stock that match with a key market index such as the S&P 500 or the Dow Jones Industrial Average. This plan needs fewer investigation from analysts and advisors, so there are lesser expenditures to eat up yields before they are transferred on to shareholders. These funds are usually devised using cost-sensitive investors in account.
+
+Balanced funds capitalize in both stocks and bonds with the focus of lowering risk of revelation to one asset class or another. alternative name of this type is "asset allocation fund." An investor may about to identify the provision of these funds between asset classes comparatively invariable, though it will vary between funds. Though their aim is asset appreciation with reduced risk, these funds hold the similar risk and are as subject to variation as other division of funds. 
+
+Other usual types of mutual funds are money market funds, sector funds, equity funds, alternative funds, smart-beta funds, target-date funds and even funds-of-funds, or mutual funds that buy shares of other mutual funds.
+
+###Advantages of Mutual Funds
+1. Diversification
+2. Economies of Scale
+3. Easy Access
+4. Professional Management
+5. Individual-Oriented
+6. Investors have the independence to study and choose from managers with a difference of styles and management aims.
+
+
+
+###Exchange Traded Funds:
+An ETF, or exchange-traded fund, is a merchantable security that follows a stock index, a commodity, bonds, or a basket of assets. Even though ETF’s are same in various behaviors, ETFs vary from mutual funds due to shares trade like usual stock on an exchange. The price of an ETF’s shares will vary all over the day as they are bought and sold. The biggest ETFs characteristically have greater mean day-to-day volume and lesser charges than mutual fund shares which does ETF’s an striking substitute for distinct investors.
+While almost all ETFs follow stock indexes, there are also ETFs which invest in commodity markets, currencies, bonds, and other asset classes. Several ETFs also hold choice exists for investors to utilize income, speculation, or hedging strategies.
+
+
+ https://www.investopedia.com/terms/e/etf.asp#ixzz5WprQTFJO 
+
+###Example:
+###Euro STOXX 50 Index Funds
+The Euro STOXX 50 Index is a foremost market index for investors looking to track the Eurozone’s biggest equity stock investments. Almost all passive index funds in the investment market that follows the Euro STOXX 50 Index are exchange-traded funds (ETFs). One of the biggest and most famous for investors is the SPDR Euro STOXX 50 ETF (FEZ). The SPDR Euro STOXX 50 ETF has $4.34 billion in assets under management. The ETF has been available to investors since October 2002.
+
+###Applying ARIMA method
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+#ARIMA Model
+#Loading required libraries
+library(MASS)
+library(tseries)
+library(forecast)
+library(ggplot2)
+#I am going to use logarithm of first 339 variables as my training data to perform time series - 
+#analysis. The reason for conversing to log because stock based on returns and returns are based - 
+#on percentages so converting in order to fit in the time series
+
+train1 <- log(TOTdf$SettleSOY[1:339])
+train2 <- log(TOTdf$SettleNG[1:339])
+train3 <- log(TOTdf$SettleSP[1:339])
+train4 <- log(TOTdf$SettleST[1:339])
+#Correllelogram
+# Autocorrelation and Partial Autocorrelation Plots
+acf(train1, lag.max=20)
+pacf(train1, lag.max=20)
+acf(train2, lag.max=20)
+pacf(train2, lag.max=20)
+acf(train3, lag.max=20)
+pacf(train3, lag.max=20)
+acf(train4, lag.max=20)
+pacf(train4, lag.max=20)
+#Moreover, we have confirmation that all of our data follows an AR(1) stationary process -
+#(one with a constant mean, variance, and autocorrelation), and we see that the Settle plot- 
+#now shows a stationary process.
+difftrain1 <- diff(train1,1) 
+difftrain2 <- diff(train2,1)
+difftrain3 <- diff(train3,1)
+difftrain4 <- diff(train4,1)
+#Perform differencing once (linear trend)
+
+#we can actually have a quick look at your data by using the basic plotting function
+difftrain1
+difftrain2
+difftrain3
+difftrain4
+#We can have a look at the plot where the linear trend have been removed
+#after apllying differencing to our data
+
+par(mfrow = c(2,2))
+plot(difftrain1)
+plot(difftrain2)
+plot(difftrain3)
+plot(difftrain4)
+
+###performing Dickey-Fuller test to training data
+adf.test(train1)
+adf.test(train2)
+adf.test(train3)
+adf.test(train4)
+#With a significant p-value of all 4 data, we cannot reject the null hypothesis of non-stationarity in our series.
+###performing Dickey-Fuller test to differenced data
+
+adf.test(difftrain1)
+adf.test(difftrain2)
+adf.test(difftrain3)
+adf.test(difftrain4)
+#However, when our data is first-differenced, we see that our p-value drops below 0.05, -
+# for all data and we can therefore now reject the null hypothesis of non-stationarity
+
+###Applying time series function in order to apply arima model
+#choosing daily frequency and selecting the number day of that year
+#for the start date.
+pricearima1 <- ts(train1, start = c(2017,320), frequency = 365) 
+pricearima2 <- ts(train2, start = c(2017,320), frequency = 365)
+pricearima3 <- ts(train3, start = c(2017,320), frequency = 365)
+pricearima4 <- ts(train4, start = c(2017,320), frequency = 365)
+
+
+### Applying auto.arima() function in order to choose suitable model
+fittrain1<-auto.arima(pricearima1)
+fittrain2<-auto.arima(pricearima2)
+fittrain3<-auto.arima(pricearima3)
+fittrain4<-auto.arima(pricearima4)
+fittrain1
+fittrain2
+fittrain3
+fittrain4
+#Moreover, running the auto.arima function in R for both models returns with ARIMA(0, 1, 0)
+#for Soyabean, natural gas and stoxx 50 except S&P500 whose arima model is ARIMA(0,1,3)
+#Actually in R auto.arima cannot handle higher frequency like 365 so it ignores seasonality
+#This is the first reason to drop this model
+ 
+
+###Plotting time series
+par(mfrow = c(2,2))
+plot(pricearima1, type='l')
+plot(pricearima2, type='l')
+plot(pricearima3, type='l')
+plot(pricearima4, type='l')
+#Having a look at the time series we can say none of the pattern goes well
+
+
+exp(train1)
+exp(train2)
+exp(train3)
+exp(train4)
+#As previously mentioned, our data is in logarithmic format. Since we are analysing stock price, -
+#this format is necessary to account for compounding returns. However, once we have obtained the -
+#forecasts, then we can obtain the real Settle forecast by -
+#converting the logarithmic figure to an exponent
+
+#Forecasting the Values From ARIMA with the 26 period
+forecastedvalues_ln1=forecast(fittrain1,h=26)
+forecastedvalues_ln2=forecast(fittrain2,h=26)
+forecastedvalues_ln3=forecast(fittrain3,h=26)
+forecastedvalues_ln4=forecast(fittrain4,h=26)
+
+#Let's have a look at the trend of forecasted value using the plot graph
+par(mfrow = c(2,2))
+plot(forecastedvalues_ln1)
+plot(forecastedvalues_ln2)
+plot(forecastedvalues_ln3)
+plot(forecastedvalues_ln4)
+#this plot will be described below   
+
+forecastedvaluesextracted1=as.numeric(forecastedvalues_ln1$mean)
+forecastedvaluesextracted2=as.numeric(forecastedvalues_ln2$mean)
+forecastedvaluesextracted3=as.numeric(forecastedvalues_ln3$mean)
+forecastedvaluesextracted4=as.numeric(forecastedvalues_ln4$mean)
+finalforecastvalues1=exp(forecastedvaluesextracted1)
+finalforecastvalues2=exp(forecastedvaluesextracted2)
+finalforecastvalues3=exp(forecastedvaluesextracted3)
+finalforecastvalues4=exp(forecastedvaluesextracted4)
+finalforecastvalues1
+finalforecastvalues2
+finalforecastvalues3
+finalforecastvalues4
+
+#Creating a dataframe with forecasted and actual value for referencing
+df1<-data.frame(TOTdf$SettleSOY[340:365],finalforecastvalues1)
+df2<-data.frame(TOTdf$SettleNG[340:365],finalforecastvalues1)
+df3<-data.frame(TOTdf$SettleSP[340:365],finalforecastvalues1)
+df4<-data.frame(TOTdf$SettleST[340:365],finalforecastvalues1)
+col_headings<-c("Actual Price","Forecasted Price")
+names(df1)<-col_headings
+names(df2)<-col_headings
+names(df3)<-col_headings
+names(df4)<-col_headings
+attach(df1)
+attach(df2)
+attach(df3)
+attach(df4)
+
+#Top rows of the newly created dataframe to hve a glance
+head(df1)
+head(df2)
+head(df3)
+head(df4)
+percentage_error1=((df1$`Actual Price`- df1$`Forecasted Price`)/(df1$`Actual Price`))
+percentage_error2=((df2$`Actual Price`- df2$`Forecasted Price`)/(df2$`Actual Price`))
+percentage_error3=((df3$`Actual Price`- df3$`Forecasted Price`)/(df3$`Actual Price`))
+percentage_error4=((df4$`Actual Price`- df4$`Forecasted Price`)/(df4$`Actual Price`))
+percentage_error1
+percentage_error2
+percentage_error3
+percentage_error4
+
+
+mean(percentage_error1)
+mean(percentage_error2)
+mean(percentage_error3)
+mean(percentage_error4)
+#From the above, we see that there is an average of an 0.1% deviation between the actual price -
+#and the forecasted price provided by ARIMA for soyabean where as for other dataset the error -
+#rate is too high. Another reason to drop this model
+
+###Ljung-Box Test
+#Note that the method for choosing a specific number of lags for Ljung-Box can be quite arbitrary. 
+#In this regard, we will run the Ljung-Box test with lags 5, 10, and 15. To run this test in R, 
+#we use the following functions:
+
+Box.test(fittrain1$resid, lag=5, type="Ljung-Box")
+Box.test(fittrain2$resid, lag=5, type="Ljung-Box")
+Box.test(fittrain3$resid, lag=5, type="Ljung-Box")
+Box.test(fittrain4$resid, lag=5, type="Ljung-Box")
+
+Box.test(fittrain1$resid, lag=10, type="Ljung-Box")
+Box.test(fittrain2$resid, lag=10, type="Ljung-Box")
+Box.test(fittrain3$resid, lag=10, type="Ljung-Box")
+Box.test(fittrain4$resid, lag=10, type="Ljung-Box")
+
+
+Box.test(fittrain1$resid, lag=15, type="Ljung-Box")
+Box.test(fittrain2$resid, lag=15, type="Ljung-Box")
+Box.test(fittrain3$resid, lag=15, type="Ljung-Box")
+Box.test(fittrain4$resid, lag=15, type="Ljung-Box")
+
+
+#From the above, we see that we have an insignificant p-value at all lags. This means that there -
+#is likely a high degree of randomness exhibited by our residuals and therefore our ARIMA model -
+#is free of autocorrelation.
+```
+
+After looking at the plot of forecast from airma model we can come with the below conclusion on out investment data,
+
+###Soyabean:
+Soyabean forecast is having a little range where risk is low but the return also will not be more as well.
+
+###Natural gas:
+Natural gas forecast from arima model doesn't looks good because the range is too broad so it is very risky to invest, 
+you may get very good return or you will lose much of your investment
+
+###Mutual funds:
+Mutual funds cannot perform well when the whole stock market index doesn't perform well, as natural gas S&P500's -
+forecast also has very broad range which makes risky to invest in the mutual fund.
+
+###ETF
+ETF on stoxx 50 might perfrm well as its range is small as well as in neutral so the probability of getting return -
+less than invested is very low.
+
+
+But, this will not finalize our insights as per the expert's advice we will also apply -
+artificial neural network mode to our data and then finalize our insights. In addtion to this here ARIMA model -
+doesn't fit well with our data, so we must look for alternative (ANN).
+
+
+###ANN model:
+```{r}
+#ANN Model:
+#Loading required library
+library(neuralnet)
+#set.seed() function is used to make sure that we get same result every time we run neural function
+set.seed(1234)
+#Plotting a histogram graph for the response variable to be forecasted  
+#In order to scale dataset to apply ANN the dataset should have all numeric value, 
+#as our dataset has "Date" value we will replicate our dataframe without "Date"
+TOTdf1 <- TOTdf[,2:length(TOTdf)]
+str(TOTdf1)
+par(mfrow = c(2,2))
+hist(TOTdf1$SettleSOY)
+hist(TOTdf1$SettleNG)
+hist(TOTdf1$SettleSP)
+hist(TOTdf1$SettleST)
+#Checking the dimension of data frame
+dim(TOTdf1)
+#Checking top 3 rows of data
+head(TOTdf1,2,range)
+
+#Fetching the minimum and maximum value for each of the variable
+apply(TOTdf1,2,range)
+
+### we can see scale of each feature or variable is not same
+###We need to normalize each variable in the interval [0,1] in order to apply neural network model
+###Normalization is the most important to apply in order to make sure that each variable is scaled properly and
+###none of the features or variables over dominates.
+#fetches minimum value of each variable in the dataframe
+minval <- apply(TOTdf1,2,min)
+
+#fetches maximum value of each variable in the dataframe
+maxval <- apply(TOTdf1,2,max)
+
+###Creating index to break down dataframe into training and testing data.
+index <- sample(1:nrow(TOTdf1),160)
+
+###Subsetting data that falls within index to create training data
+training <- TOTdf1[index,]
+
+#Checking the dimension of training data
+dim(training)
+
+###Subsetting data that falls beneath the index to create testing data
+testing <- TOTdf1[-index,]
+
+#Checking the dimension of testing data
+dim(testing)
+
+###Scaling provides us mean = 0 and standard deviation = 1 for each variable.
+newdf <- as.data.frame(scale(TOTdf1,center=minval,scale=maxval - minval))
+### we now creating index in order to divide the scaled dataframe into testing and training data
+ind <- sample(1:nrow(newdf),160)
+###Generating training data from scaled dataframe
+traindfm <- newdf[ind,]
+#Checking the dimension of the scaled training data
+dim(traindfm)
+###Generating testing data from scaled dataframe
+testdfm <- newdf[-ind,]
+#Checking the dimension of the scaled testing data
+dim(testdfm)
+###We will consider some configuration for neural network like follows,
+###input layer (predicting variable – x1,x2,….,xn) -> number of hidden layers -> output layer(response variable – y)
+#Fetching names of each variable in the dataset
+varbls <- colnames(newdf)
+###Creating formula in following format,
+###y ~ x1 + x2 + ……………. + xn	
+predictvarbls1 <- varbls[c(17,18,19,20)]
+predictvarbls2 <- varbls[c(25,26,27,28)]
+predictvarbls3 <- varbls[c(48,49,50,51)]
+predictvarbls4 <- varbls[c(56,57,58)]
+
+predictvarbls1 <- paste(predictvarbls1,collapse = "+")
+predictvarbls2 <- paste(predictvarbls2,collapse = "+")
+predictvarbls3 <- paste(predictvarbls3,collapse = "+")
+predictvarbls4 <- paste(predictvarbls4,collapse = "+")
+
+form1 <- as.formula(paste("SettleSOY~",predictvarbls1,collapse = "+"))
+form2 <- as.formula(paste("SettleNG~",predictvarbls2,collapse = "+"))
+form3 <- as.formula(paste("SettleSP~",predictvarbls3,collapse = "+"))
+form4 <- as.formula(paste("SettleST~",predictvarbls4,collapse = "+"))
+###Applying neural network model
+neuralmode1 <- neuralnet(formula = form1,hidden = c(4,2), linear.output=T,data=traindfm)
+neuralmode2 <- neuralnet(formula = form2,hidden = c(4,2), linear.output=T,data=traindfm)
+neuralmode3 <- neuralnet(formula = form3,hidden = c(4,2), linear.output=T,data=traindfm)
+neuralmode4 <- neuralnet(formula = form4,hidden = c(4,2), linear.output=T,data=traindfm)
+#Plotting neural network
+par(mfrow = c(2,2))
+plot(neuralmode1)
+plot(neuralmode2)
+plot(neuralmode3)
+plot(neuralmode4)
+###Prediction for test data set
+#predictionm <- compute(neuralmode, testdfm[,c(-22,-30,-53,-59)])
+predictionm1 <- compute(neuralmode1, testdfm[,c(17,18,19,20)])
+predictionm2 <- compute(neuralmode2, testdfm[,c(25,26,27,28)])
+predictionm3 <- compute(neuralmode3, testdfm[,c(48,49,50,51)])
+predictionm4 <- compute(neuralmode4, testdfm[,c(56,57,58)])
+###Structure of prediction of test dataset
+str(predictionm1)
+str(predictionm2)
+str(predictionm3)
+str(predictionm4)
+predcm1 <- predictionm1$net.result 
+predcm2 <- predictionm2$net.result 
+predcm3 <- predictionm3$net.result 
+predcm4 <- predictionm4$net.result 
+predictionm1 <- predcm1*(max(testdfm$SettleSOY)-min(testdfm$SettleSOY))+min(testdfm$SettleSOY)
+predictionm2 <- predcm2*(max(testdfm$SettleNG)-min(testdfm$SettleNG))+min(testdfm$SettleNG)
+predictionm3 <- predcm3*(max(testdfm$SettleSP)-min(testdfm$SettleSP))+min(testdfm$SettleSP)
+predictionm4 <- predcm4*(max(testdfm$SettleST)-min(testdfm$SettleST))+min(testdfm$SettleST)
+
+actualval1 <- (testdfm$SettleSOY)*(max(testdfm$SettleSOY)-min(testdfm$SettleSOY))+min(testdfm$SettleSOY)
+actualval2 <- (testdfm$SettleNG)*(max(testdfm$SettleNG)-min(testdfm$SettleNG))+min(testdfm$SettleNG)
+actualval3 <- (testdfm$SettleSP)*(max(testdfm$SettleSP)-min(testdfm$SettleSP))+min(testdfm$SettleSP)
+actualval4 <- (testdfm$SettleST)*(max(testdfm$SettleST)-min(testdfm$SettleST))+min(testdfm$SettleST)
+
+#Mean Square Error
+MSE1 <- sum((predictionm1-actualval1)^2)/nrow(testdfm)
+MSE2 <- sum((predictionm2-actualval2)^2)/nrow(testdfm)
+MSE3 <- sum((predictionm2-actualval3)^2)/nrow(testdfm)
+MSE4 <- sum((predictionm2-actualval4)^2)/nrow(testdfm)
+
+MSE1
+MSE2
+MSE3
+MSE4
+#copy the plot line from the video
+final1 <- (testdfm$SettleSOY-predictionm1)
+final2 <- (testdfm$SettleNG-predictionm2)
+final3 <- (testdfm$SettleSP-predictionm3)
+final4 <- (testdfm$SettleST-predictionm4)
+
+finalresult1 <- (testing$SettleSOY + final1)
+finalresult2 <- (testing$SettleNG + final2)
+finalresult3 <- (testing$SettleSP + final3)
+finalresult4 <- (testing$SettleST + final4)
+
+par(mfrow = c(2,2))
+plot(finalresult1,finalresult2)
+plot(finalresult3,finalresult4)
+
+```
+
+
+
+
+
+
+#References:
+[1] https://www.investopedia.com/terms/p/portfoliomanager.asp.                     
+
+[2} Standard methods for imputing missing values in financial panel/time series data – cite this.               
+
+[3] A comparison of artificial neural network and time series models for forecasting commodity prices.                   
+
+[4] Predicting mutual fund performance using artificial neural networks – cite this                               
+
+[5] J. T. Yao, C. L. Tan, and H. L. Poh, “Neural networks for technical analysis: a study on KLCI,” International Journal of Theoretical and Applied Finance, vol. 2, no. 2, pp. 221–241, 1999.                           
+
+[6] J. V. Hansen, J. B. Mcdonald, and R. D. Nelson, “Time series prediction with genetic-algorithm designed neural networks: an empirical comparison with modern statistical models,” Computational Intelligence, vol. 15, no. 3, pp. 171–184, 1999.            
+
+[7]	Y. B. Wijaya, S. Kom, and T. A. Napitupulu, “Stock price prediction: Comparison of Arima and artificial neural network methods—an Indonesia stock's case,” in Proceedings of the 2nd International Conference on Advances in Computing, Control and Telecommunication Technologies (ACT '10), pp. 176–179, Jakarta, Indonesia, December 2010.                                       
+
+[8] Comparison of ARIMA and Artificial Neural Networks Models for Stock Price Prediction
+Ayodele Ariyo Adebiyi,1 Aderemi Oluyinka Adewumi,1 and Charles Korede Ayo2, 2014                                             
+
+[9] KNOEPFEL, I. and BRABECK-LETMATHE, P., 2012. Commodities. Sustainable Investing for Institutional Investors: Risks, Regulations and Strategies. pp. 201-210.                                            
+
